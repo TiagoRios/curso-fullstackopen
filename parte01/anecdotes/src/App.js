@@ -13,10 +13,60 @@ export default function App() {
     ]
 
     const [selected, setSelected] = useState(0)
+    const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+
+    let handleSelectedClick = () => {
+        setSelected(Math.floor(Math.random() * anecdotes.length))
+    }
+
+    let handleVotesClick = () => {
+        let votesCopy = votes.slice();
+        votesCopy[selected] += 1;
+        setVotes(votesCopy)
+    }
 
     return (
         <div>
-            {anecdotes[selected]}
+            <Header>Anecdote of the day</Header>
+            <Anecdote anecdote={anecdotes[selected]} vote={votes[selected]} />
+
+            <Button value="Vote" onClick={handleVotesClick} />
+            <Button value="Next anecdote" onClick={handleSelectedClick} />
+
+            <Header text="Anecdote with most votes" />
+            <AnecdoteMostVoted anecdotes={anecdotes} votes={votes} />
+        </div>
+    )
+}
+
+function Header({ text, children }) {
+    return children ? <h1>{children}</h1> : <h1>{text}</h1>
+}
+
+function Button({ value, onClick }) {
+    return <button
+        style={{ fontSize: "1.5rem", marginRight:"10px" }}
+        onClick={onClick}>{value}</button>;
+}
+
+function Anecdote({ anecdote, vote }) {
+    return (
+        <div>
+            <p>{anecdote}</p>
+            <p>Has {vote} votes</p>
+        </div>
+    )
+}
+
+function AnecdoteMostVoted({ anecdotes, votes }) {
+    return (
+        <div>
+            {Math.max(...votes) !== 0 ?
+                <>
+                    <p>{anecdotes[votes.indexOf(Math.max(...votes))]}</p>
+                    <p>Has {Math.max(...votes)} votes</p>
+                </> : <p>Anecdotes without votes.</p>
+            }
         </div>
     )
 }
