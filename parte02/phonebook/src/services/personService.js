@@ -15,10 +15,14 @@ const create = (newObject) => {
 
 const update = (id, newObject) => {
     return axios
-        .post(`${baseUrl}/${id}`, newObject)
+        .put(`${baseUrl}/${id}`, newObject)
         .then(res => res.data);
 }
 
-const personService = { getAll, create, update }
+const deletee = (id) => {
+    return axios.delete(`${baseUrl}/${id}`)
+}
+
+const personService = { getAll, create, update, deletee }
 
 export default personService;
