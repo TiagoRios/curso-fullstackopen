@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import personService from './services/personService';
 
 export default function App() {
-    const [persons, setPersons] = useState([
-        { name: 'I', numbers: ['111', "222", "333", "444"], id: 5 },
-        { name: 'Arto Hellas', numbers: ["01-12-2334455", "11-11-1111111"], id: 1 },
-        { name: 'you', numbers: ['99-99-9999999', "88-88-8888888"], id: 6 },
-        { name: 'Ada Lovelace', numbers: ['39-44-5323523', "22-22-2222222"], id: 2 },
-        { name: 'Dan Abramov', numbers: ['12-43-234345', "33-33-3333333"], id: 3 },
-        { name: 'Mary Poppendieck', numbers: ['39-23-6423122', "44-44-4444444"], id: 4 },
-    ]);
+    const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
     const [filteredPersons, setFilteredPersons] = useState([]);
     const [inputFilterPersons, setInputFilterPersons] = useState("");
 
     useEffect(() => {
-        setFilteredPersons(persons);
-    }, [persons])
+        personService.getAll().then((data) => {
+            setPersons(data)
+            setFilteredPersons(data)
+        });
+    }, []);
 
     let handleNewNameChange = (event) => {
         setNewName(capitalize(event.target.value));
@@ -26,70 +24,90 @@ export default function App() {
         setNewNumber(event.target.value);
     };
 
-    let handleSubmit = (event) => {
-        event.preventDefault();
-        let personFound = findPersonByName(persons, newName);
-        let numberFound = "";
-
-        if (personFound !== []) {
-            numberFound = findNumber(personFound[0]?.numbers, newNumber);
-        }
-
-        // Person doesn't exist. CREATE new Person.
-        if (personFound.length === 0 && newName !== "" && newNumber !== "") {
-            let newObject = {
-                id: nextPersonId(persons),
-                name: newName,
-                numbers: [newNumber],
-            };
-            setPersons(persons.concat(newObject));
-            setNewName("");
-            setNewNumber("");
-            setInputFilterPersons("");
-            alert(`Person "${capitalize(newName)}" added.`);
-        }
-
-        // Person exist and number exist. ALERT message.
-        // else if
-        // Person exist, BUT number doesn't exist. UPDATE Person with new NUMBER
-        if ((personFound.length > 0) && (numberFound.length > 0)) {
-            alert(`Person "${capitalize(newName)}" with phone "${newNumber}" is already added to phonebook`);
-
-        } else if (personFound.length > 0) {
-
-            let OtherPersons = findOtherPersons(persons, newName);
-
-            let updatedPerson = {
-                id: personFound[0].id,
-                name: personFound[0].name,
-                numbers: personFound[0].numbers.concat(newNumber)
-            };
-
-            setPersons([...OtherPersons, updatedPerson]);
-            setNewNumber("");
-            setInputFilterPersons("");
-            alert(`Person "${capitalize(newName)}" updated.`);
-        }
-    };
-
     let handleInputFilterPersonsChange = (event) => {
         let eventValue = event.target.value;
         let filteredPersons = findAllPersons(persons, eventValue);
 
-        if (eventValue === "") {
-            setFilteredPersons(persons);
-        } else {
+        (eventValue === "") ?
+            setFilteredPersons(persons) :
             setFilteredPersons(filteredPersons);
-        }
 
         setInputFilterPersons(eventValue);
+    }
+
+    let handleSubmit = (event) => {
+        event.preventDefault();
+        let objectPersonFound = findPerson(persons, newName) || {};
+        let numberFound = "";
+
+        let isFilledObject = Object.keys(objectPersonFound).length !== 0;
+
+        if (isFilledObject) {
+            numberFound = findNumber(objectPersonFound.numbers, newNumber);
+        }
+
+        // Person doesn't exist. CREATE new Person.
+        if (!isFilledObject && newName !== "" && newNumber !== "") {
+            let newObject = {
+                name: newName,
+                numbers: [newNumber],
+            };
+
+            personService
+                .create(newObject)
+                .then(data => {
+                    setPersons(persons.concat(data));
+                    setFilteredPersons(persons.concat(data));
+                    setNewName("");
+                    setNewNumber("");
+                    setInputFilterPersons("");
+                });
+
+            alert(`Person "${capitalize(newName)}" added.`);
+        }
+
+        // Person exist and number exist. ALERT message.
+        if ((isFilledObject) && (numberFound.length > 0)) {
+            alert(`Person "${capitalize(newName)}" with phone "${newNumber}" is already added to phonebook`);
+        }
+        // Person exist, BUT number doesn't exist. UPDATE Person with new NUMBER
+        else if (isFilledObject) {
+
+            let updatedPerson = {
+                ...objectPersonFound,
+                numbers: objectPersonFound.numbers.concat(newNumber)
+            };
+
+            personService
+                .update(objectPersonFound.id, updatedPerson)
+                .then(data => {
+                    let updatedPersonsArray = persons.map(p => p.id !== objectPersonFound.id ? p : data);
+                    setPersons(updatedPersonsArray)
+                    setFilteredPersons(updatedPersonsArray);
+                    setNewNumber("");
+                    setInputFilterPersons("");
+                    alert(`Person "${capitalize(newName)}" updated.`);
+                });
+        }
+    };
+
+    let updateAfterDeletePerson = (updatedPerson) => {
+        let updatePersons = persons.filter(p => p.id !== updatedPerson.id)
+        setPersons(updatePersons);
+        setFilteredPersons(updatePersons);
+    }
+
+    let updatePersonNumbers = (updatedPerson) => {
+        let updatedPersons = [...persons.filter(p => p.id !== updatedPerson.id), updatedPerson]
+        setPersons(updatedPersons);
+        setFilteredPersons(updatedPersons);
     }
 
     return (
         <div>
             <HeaderH2 value="Phonebook" />
 
-            <HeaderH3 value="Add new person" />
+            <HeaderH3 value="Add new person or new numbers" />
             <PersonForm
                 newName={newName}
                 newNumber={newNumber}
@@ -105,10 +123,19 @@ export default function App() {
                 value={inputFilterPersons}
                 onChange={handleInputFilterPersonsChange} />
 
-            <PersonsList persons={filteredPersons} />
+            <PersonsList
+                persons={filteredPersons}
+                updateOnDeletePerson={updateAfterDeletePerson}
+                updatePersonNumbers={updatePersonNumbers} />
         </div>
     );
 }
+
+
+/* ==========================================================
+                            Components
+   ========================================================== */
+
 
 function HeaderH2({ value }) {
     return <h1>{value}</h1>
@@ -146,6 +173,7 @@ function PersonForm(props) {
                     value={props.newNumber}
                     onChange={props.handleNewNumberChange}
                     required
+                    minLength="3"
                     placeholder="01-23-4567890" />
             </div>
 
@@ -155,35 +183,132 @@ function PersonForm(props) {
     );
 }
 
-function PersonsList({ persons }) {
+function PersonsList({ persons, updateOnDeletePerson, updatePersonNumbers }) {
     return (
         persons.map((person) =>
-            <PersonDetails key={person.name} person={person} />)
+            <PersonDetails
+                key={person.id}
+                person={person}
+                updateOnDeletePerson={updateOnDeletePerson}
+                updatePersonNumbers={updatePersonNumbers}
+            />)
     )
 }
 
-function PersonDetails({ person }) {
+function PersonDetails({ person, updateOnDeletePerson, updatePersonNumbers }) {
     return (
         <details>
-            <summary>{person.name}</summary>
+            <summary>
+                {person.name} <DeletePersonButton textButton="Delete" person={person} updateOnDelete={updateOnDeletePerson} />
+            </summary>
 
             <div style={{ padding: "5px" }}>
-
                 id: {person.id} <br />
                 Numbers:
-                <ol style={{ marginTop: "0" }}>
-                    {
-                        person.numbers.map((x) => {
-                            return <li style={{ marginLeft: "20px" }} key={x}>{x}</li>
-                        })
-                    }
-                </ol>
+                <OrderedListNumbers person={person} updatePersonNumbers={updatePersonNumbers} />
             </div>
         </details>
     )
 }
 
-/* ============================ Utils ========================= */
+function OrderedListNumbers({ person, updatePersonNumbers }) {
+    return (
+        <ol style={{ marginTop: "0" }}>
+            {
+                person.numbers.map((number) => {
+                    return (
+                        <li key={number} style={{ marginLeft: "20px" }} >
+                            {number} <UpdateNumberButton
+                                textButton="Update"
+                                number={number}
+                                person={person}
+                                updateOnUpdate={updatePersonNumbers} />
+                            {(person.numbers.length > 1) && <DeleteNumberButton
+                                textButton="Del"
+                                number={number}
+                                person={person}
+                                updateOnDelete={updatePersonNumbers} />
+                            }
+                        </li>
+                    )
+                })
+            }
+        </ol>
+    )
+}
+
+function DeletePersonButton({ textButton, person, updateOnDelete }) {
+    let confirmDelete = () => {
+        let confirmed = window.confirm(`Delete ${person.name}?`)
+        if (confirmed) {
+            personService
+                .deletee(person.id)
+                .then(() => {
+                    updateOnDelete(person);
+                    console.log("Delete Sucess.\n",)
+                })
+                .catch((err) => console.log("Fail Delete!!\n", err))
+        }
+
+    }
+
+    return <button onClick={confirmDelete}>{textButton}</button>
+}
+
+function DeleteNumberButton({ textButton, number, person, updateOnDelete }) {
+    let confirmDelete = () => {
+        let confirmed = window.confirm(`Delete number: ${number}?`)
+        if (confirmed) {
+            let updatedPersonNumbers = {
+                ...person,
+                numbers: person.numbers.filter(num => num !== number) // delete number.
+            };
+
+            personService
+                .update(person.id, updatedPersonNumbers)
+                .then(() => {
+                    updateOnDelete(updatedPersonNumbers)
+                }).catch(err => console.log("Error::: ", err))
+        }
+
+    }
+
+    return (
+        <button onClick={confirmDelete}>{textButton}</button>
+    )
+}
+
+function UpdateNumberButton({ textButton, number, person, updateOnUpdate }) {
+    let confirmUpdate = () => {
+        let confirmed = window.confirm(`Update number: ${number}?`)
+        if (confirmed) {
+            let stringNumber = window.prompt("please enter a new number:")
+            if (stringNumber === "" || stringNumber === undefined || stringNumber === null || stringNumber.length < 3) { // other checks
+                window.alert("Provide a valid phone number.")
+            } else {
+                let updatedPersonNumbers = {
+                    ...person,
+                    numbers: [...person.numbers.filter(num => num !== number), stringNumber] // delete number.
+                };
+
+                personService
+                    .update(person.id, updatedPersonNumbers)
+                    .then(() => {
+                        updateOnUpdate(updatedPersonNumbers)
+                    }).catch(err => console.log("Erro:: ", err))
+            }
+        }
+    }
+
+    return (
+        <button onClick={confirmUpdate}>{textButton}</button>
+    )
+}
+
+/* ==========================================================
+                               Utils
+   ========================================================== */
+
 
 /**
  * Capitalize the string.
@@ -209,6 +334,10 @@ function findAllPersons(personsArr, name) {
     );
 }
 
+function findPerson(personsArr, name) {
+    return personsArr.find(x => x.name.toLowerCase() === name.toLowerCase());
+}
+
 /**
  * Find number.
  * 
@@ -218,36 +347,4 @@ function findAllPersons(personsArr, name) {
  */
 function findNumber(numbersArr, number) {
     return numbersArr?.filter(a => a === number).join("");
-}
-
-/**
- * Find one person by their exact name.
- * 
- * @param {person[]} personsArr Array to filter.
- * @param {String} name name of person.
- * @returns {person[]} Array with the person or empty array.
- */
-function findPersonByName(personsArr, name) {
-    return personsArr?.filter(x => x.name.toLowerCase() === name.toLowerCase());
-}
-
-/**
- * Finds all Persons except the given person name.
- * 
- * @param {Array} personArr Array to filter.
- * @param {String} name person name to not fetched.
- * @returns Array with the other persons.
- */
-function findOtherPersons(personArr, name) {
-    return personArr.filter(x => x.name.toLowerCase() !== name.toLowerCase())
-}
-
-/**
- * Find the next available id.
- * 
- * @param {Array} personArr Array to search id.
- * @returns {number} next integer.
- */
-function nextPersonId(personArr) {
-    return Math.max(...personArr.map((person) => person.id)) + 1;
 }
