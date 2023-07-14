@@ -10,6 +10,13 @@ export function capitalize(str) {
         .join(" ");
 }
 
+/**
+ * Sets a timeout for the message.
+ * 
+ * @param {*} message the message that will be displayed.
+ * @param {*} setMessage function that uses the message. 
+ * @param {Number} timeout time in milliseconds.
+ */
 export function messageDiplayTimeout(message, setMessage, timeout) {
     setMessage(message);
     setTimeout(() => setMessage(null), timeout);

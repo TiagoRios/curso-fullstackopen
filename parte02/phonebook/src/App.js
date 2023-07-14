@@ -39,97 +39,101 @@ export default function App() {
         setNewNumber(event.target.value);
     };
 
+    let handleNewMessage = (message) => {
+        setNewMessage(message)
+    }
+
     let handleInputFilterPersonsChange = (event) => {
-        updatePersonsAndFilteredPersons(persons, event.target.value)
+        updateStates(persons, event.target.value)
         setInputFilterPersons(event.target.value);
+    }
+
+    let handleDeletePerson = (updatedPerson) => {
+        let updatedPersonsArray = persons.filter(person => person.id !== updatedPerson.id) // Delete person
+        updateStates(updatedPersonsArray, inputFilterPersons)
+
+        console.log(`"${capitalize(updatedPerson.name)}" deleted.`);
+        messageDiplayTimeout(`"${capitalize(updatedPerson.name)}" deleted.`, setNewMessage, 5000);
+    }
+
+    let handleUpdateNumber = (updatedPerson) => {
+        let updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson) // Update person numbers
+        updateStates(updatedPersonsArray, inputFilterPersons)
+
+        console.log(`Updated "${capitalize(updatedPerson.name)}" numbers.`);
+        messageDiplayTimeout(`Updated "${capitalize(updatedPerson.name)}" numbers.`, setNewMessage, 5000);
     }
 
     let handleSubmit = (event) => {
         event.preventDefault();
-
-        let numberFound = undefined;
         let personFound = persons.find(p => p.name.toLowerCase() === newName.toLowerCase());
-
-        if (personFound) {
-            numberFound = personFound.numbers?.find(num => num === newNumber);
-        }
 
         // Person doesn't exist. CREATE new Person.
         if (!personFound) {
-            let newObject = { name: newName, numbers: [newNumber] };
+            let newPerson = { name: newName, numbers: [newNumber] };
 
-            personService
-                .create(newObject)
-                .then(data => {
-                    let updatedPersonsArray = persons.concat(data);
-                    updatePersonsAndFilteredPersons(updatedPersonsArray, inputFilterPersons);
-
-                    console.log(`Info: "${newObject.name}" added.`);
-                    messageDiplayTimeout(`Info: "${newObject.name}" added.`, setNewMessage, 5000);
-                }).catch(error => {
-                    console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                    messageDiplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
-                })
+            personServiceCreate(newPerson, persons, inputFilterPersons)
         }
 
-        // Person exist and number exist. ALERT message.
-        if (personFound && numberFound) {
-            alert(`Person "${capitalize(newName)}" with phone "${newNumber}" is already added to phonebook`);
-        }
+        // Person exist.
+        if (personFound) {
+            let confirmed = window.confirm(`Person "${capitalize(newName)}" is already added to phonebook. Update current number to: ${newNumber}?`)
 
-        // Person exist, BUT number doesn't exist. UPDATE Person with new NUMBER
-        else if (personFound) {
-            let changedPerson = {
-                ...personFound,
-                numbers: personFound.numbers.concat(newNumber) // update numbers list.
-            };
+            if (confirmed) {
+                // Remove number from the list and add it to the end of the list.
+                let personWithUpdatedNumbers = {
+                    ...personFound,
+                    numbers: [...personFound.numbers.filter(n => n !== newNumber), newNumber]
+                }
 
-            personService
-                .update(changedPerson.id, changedPerson)
-                .then(data => {
-                    let updatedPersonsArray = persons.map(p => p.id !== changedPerson.id ? p : data);
-                    updatePersonsAndFilteredPersons(updatedPersonsArray, inputFilterPersons)
-
-                    console.log(`Info: Added new number for "${capitalize(changedPerson.name)}".`);
-                    messageDiplayTimeout(`Info: Added new number for "${capitalize(changedPerson.name)}".`, setNewMessage, 5000);
-                }).catch(error => {
-                    console.log(`Error: ${error.response.statusText} - ${error.message}`)
-                    messageDiplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
-                })
+                personServiceUpdate(personWithUpdatedNumbers, persons, inputFilterPersons);
+            }
         }
     };
 
-    // type: "delete" or "update"
-    let handleOnUpdatePersons = (updatedPerson, type) => {
-        let updatedPersonsArray = [];
-
-        if (type === "delete") {
-            updatedPersonsArray = persons.filter(person => person.id !== updatedPerson.id) // Delete person
-            updatePersonsAndFilteredPersons(updatedPersonsArray, inputFilterPersons)
-
-            console.log(`"${capitalize(updatedPerson.name)}" deleted.`);
-            messageDiplayTimeout(`"${capitalize(updatedPerson.name)}" deleted.`, setNewMessage, 5000);
-
-        } else if (type === "update") {
-            updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson) // Update person numbers
-            updatePersonsAndFilteredPersons(updatedPersonsArray, inputFilterPersons)
-
-            console.log(`Updated "${capitalize(updatedPerson.name)}" numbers.`);
-            messageDiplayTimeout(`Updated "${capitalize(updatedPerson.name)}" numbers.`, setNewMessage, 5000);
-        }
-    }
-
-    let updatePersonsAndFilteredPersons = (personsArray, textToFilter) => {
-        let filteredArray = personsArray.filter((person) => {
-            return person.name.toLowerCase().includes(textToFilter.toLowerCase())
-        });
+    let updateStates = (personsArray, textToFilter) => {
         setNewNumber("");
         setPersons(personsArray);
-        setFilteredPersons(filteredArray);
+        setFilteredPersons(filterPersons(personsArray, textToFilter));
     }
 
-    let handleNewMessage = (message) => {
-        setNewMessage(message)
+    const filterPersons = (personsArray, textToFilter) => {
+        return personsArray.filter((person) => {
+            return person.name.toLowerCase().includes(textToFilter.toLowerCase())
+        });
+    }
+
+    const personServiceCreate = (newObject, persons, textToFilter) => {
+        personService
+            .create(newObject)
+            .then(data => {
+                let updatedPersonsArray = persons.concat(data); // adds new object at the end.
+                updateStates(updatedPersonsArray, textToFilter);
+
+                console.log(`Info: "${newObject.name}" added.`);
+                messageDiplayTimeout(`"${newObject.name}" added.`, setNewMessage, 5000);
+            }).catch(error => {
+                console.log(`Error: ${error.response.statusText} - ${error.message}`);
+                messageDiplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
+            })
+    }
+
+    const personServiceUpdate = (updatedPerson, persons, textToFilter) => {
+        personService
+            .update(updatedPerson.id, updatedPerson) // Update person.
+            .then(() => {
+                let newNumbers = updatedPerson.numbers;
+                let oldNumbers = persons.find(p => p.id === updatedPerson.id).numbers;
+                let updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)
+
+                updateStates(updatedPersonsArray, textToFilter)
+                messageDiplayTimeout(`Updated number "${oldNumbers[oldNumbers.length - 1]}" to ${newNumbers[newNumbers.length - 1]}.`, setNewMessage, 5000);
+
+            }).catch(error => {
+                console.log(`Error: ${error.response.statusText} - ${error.message}`);
+                messageDiplayTimeout(`Error: it was not possible to update. please refresh the page.`,
+                    handleNewMessage, 5000)
+            })
     }
 
     return (
@@ -138,7 +142,7 @@ export default function App() {
 
             <Notification message={newMessage} />
 
-            <h2>Add new person or new numbers</h2>
+            <h2>Add new person</h2>
             <PersonForm
                 newName={newName}
                 newNumber={newNumber}
@@ -147,17 +151,20 @@ export default function App() {
                 handleNewNumberChange={handleNewNumberChange}
             />
 
-            <h2>Persons List</h2>
+            {persons.length > 0 && <>
+                <h2>Persons List</h2>
 
-            <PersonsFilter
-                text="Filter person by name"
-                value={inputFilterPersons}
-                onChange={handleInputFilterPersonsChange} />
+                <PersonsFilter
+                    text="Filter person by name"
+                    value={inputFilterPersons}
+                    onChange={handleInputFilterPersonsChange} />
 
-            <PersonsList
-                persons={filteredPersons}
-                handleNewMessage={handleNewMessage} 
-                onUpdatePersons={handleOnUpdatePersons} />
+                <PersonsList
+                    persons={filteredPersons}
+                    handleNewMessage={handleNewMessage}
+                    onDeletePerson={handleDeletePerson}
+                    onUpdateNumber={handleUpdateNumber} />
+            </>}
         </div>
     );
 }
