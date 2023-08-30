@@ -2,37 +2,44 @@
 // It is not part of the exercises.
 
 import personService from "../services/personService"
-import { messageDiplayTimeout } from "../utils"
+import { messageDisplayTimeout } from "../utils"
 
-export default function OrderedListNumbers({ person, onUpdateNumber, handleNewMessage }) {
-    let lastNumber = person.numbers[person.numbers.length - 1];
+export default function NumbersList({ person, onUpdateNumber, handleNewMessage }) {
     return (
         <ol style={{ marginTop: "0" }}>
-            {
-                person.numbers.map((number) => {
-                    return (
-                        <li key={number} style={{ marginLeft: "20px" }} >
-                            <span style={(lastNumber === number) ? { fontWeight: "bold", color: "green" } : {}}>
-                                {(lastNumber === number) ? `Current (${number})` : number}
-                            </span> <UpdateNumberButton
-                                textButton="Edit"
-                                number={number}
-                                person={person}
-                                onUpdateNumber={onUpdateNumber}
-                                handleNewMessage={handleNewMessage} />
-
-                            {(person.numbers.length > 1) && <DeleteNumberButton
-                                textButton="Del"
-                                number={number}
-                                person={person}
-                                onDeleteNumber={onUpdateNumber}
-                                handleNewMessage={handleNewMessage} />
-                            }
-                        </li>
-                    )
-                })
-            }
+            {person.numbers.map((number) => (
+                <PhoneNumber
+                    key={number}
+                    person={person}
+                    number={number}
+                    onUpdateNumber={onUpdateNumber}
+                    handleNewMessage={handleNewMessage}
+                />))}
         </ol>
+    )
+}
+
+function PhoneNumber({ person, number, onUpdateNumber, handleNewMessage }) {
+    let lastNumber = person.numbers[person.numbers.length - 1];
+    return (
+        <li>
+            <span style={(lastNumber === number) ? { fontWeight: "bold", color: "green" } : {}}>
+                {(lastNumber === number) ? `New (${number})` : `Old - ${number}`}
+            </span> <EditNumberButton
+                textButton="Edit"
+                number={number}
+                person={person}
+                onUpdateNumber={onUpdateNumber}
+                handleNewMessage={handleNewMessage} />
+
+            {(person.numbers.length > 1) && <DeleteNumberButton
+                textButton="Del"
+                number={number}
+                person={person}
+                onDeleteNumber={onUpdateNumber}
+                handleNewMessage={handleNewMessage} />
+            }
+        </li>
     )
 }
 
@@ -52,18 +59,18 @@ function DeleteNumberButton({ textButton, number, person, onDeleteNumber, handle
                     onDeleteNumber(personWithUpdatedNumbers, "delete")
                 }).catch(error => {
                     console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                    messageDiplayTimeout(`Error: Person has already been deleted. please refresh the page.`,
+                    messageDisplayTimeout(`Error: Person has already been deleted. please refresh the page.`,
                         handleNewMessage, 5000)
                 })
         }
     }
 
     return (
-        <button onClick={confirmDelete}>{textButton}</button>
+        <button className="btn warning" onClick={confirmDelete}>{textButton}</button>
     )
 }
 
-function UpdateNumberButton({ textButton, number, person, onUpdateNumber, handleNewMessage }) {
+function EditNumberButton({ textButton, number, person, onUpdateNumber, handleNewMessage }) {
     let confirmUpdate = () => {
         let confirmed = window.confirm(`Edit number: ${number}?`)
 
@@ -85,7 +92,7 @@ function UpdateNumberButton({ textButton, number, person, onUpdateNumber, handle
                         onUpdateNumber(personWithUpdatedNumbers, "update")
                     }).catch(error => {
                         console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                        messageDiplayTimeout(`Error: it was not possible to update. please refresh the page.`,
+                        messageDisplayTimeout(`Error: it was not possible to update. please refresh the page.`,
                             handleNewMessage, 5000)
                     })
             }
@@ -93,6 +100,6 @@ function UpdateNumberButton({ textButton, number, person, onUpdateNumber, handle
     }
 
     return (
-        <button onClick={confirmUpdate}>{textButton}</button>
+        <button className="btn black" onClick={confirmUpdate}>{textButton}</button>
     )
 }

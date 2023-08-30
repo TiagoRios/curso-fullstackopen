@@ -17,7 +17,7 @@ export function capitalize(str) {
  * @param {*} setMessage function that uses the message. 
  * @param {Number} timeout time in milliseconds.
  */
-export function messageDiplayTimeout(message, setMessage, timeout) {
+export function messageDisplayTimeout(message, setMessage, timeout) {
     setMessage(message);
     setTimeout(() => setMessage(null), timeout);
 }

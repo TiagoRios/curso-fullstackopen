@@ -7,13 +7,13 @@ import PersonsFilter from './components/PersonFilter';
 
 import personService from "./services/personService";
 
-import { capitalize, messageDiplayTimeout } from './utils';
+import { capitalize, messageDisplayTimeout } from './utils';
 
 export default function App() {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
-    const [newMessage, setNewMessage] = useState(null)
+    const [newMessage, setNewMessage] = useState(null) // improve with Redux or API context
     const [filteredPersons, setFilteredPersons] = useState([]);
     const [inputFilterPersons, setInputFilterPersons] = useState("");
 
@@ -25,7 +25,7 @@ export default function App() {
         }).catch(error => {
             console.log(`Error: ${error.response.statusText} - ${error.message}`);
 
-            messageDiplayTimeout(`Error: ${error.response.statusText} - ${error.message}`,
+            messageDisplayTimeout(`Error: ${error.response.statusText} - ${error.message}`,
                 setNewMessage, 5000);
         })
 
@@ -53,7 +53,7 @@ export default function App() {
         updateStates(updatedPersonsArray, inputFilterPersons)
 
         console.log(`"${capitalize(updatedPerson.name)}" deleted.`);
-        messageDiplayTimeout(`"${capitalize(updatedPerson.name)}" deleted.`, setNewMessage, 5000);
+        messageDisplayTimeout(`"${capitalize(updatedPerson.name)}" deleted.`, setNewMessage, 5000);
     }
 
     let handleUpdateNumber = (updatedPerson) => {
@@ -61,7 +61,7 @@ export default function App() {
         updateStates(updatedPersonsArray, inputFilterPersons)
 
         console.log(`Updated "${capitalize(updatedPerson.name)}" numbers.`);
-        messageDiplayTimeout(`Updated "${capitalize(updatedPerson.name)}" numbers.`, setNewMessage, 5000);
+        messageDisplayTimeout(`Updated "${capitalize(updatedPerson.name)}" numbers.`, setNewMessage, 5000);
     }
 
     let handleSubmit = (event) => {
@@ -80,10 +80,16 @@ export default function App() {
             let confirmed = window.confirm(`Person "${capitalize(newName)}" is already added to phonebook. Update current number to: ${newNumber}?`)
 
             if (confirmed) {
-                // Remove number from the list and add it to the end of the list.
+                let numbersPerson = personFound.numbers.filter(n => n !== newNumber)
+
+                // Limit max 3 numbers .
+                while (numbersPerson.length >= 3) {
+                    numbersPerson.splice(0, 1);
+                }
+
                 let personWithUpdatedNumbers = {
                     ...personFound,
-                    numbers: [...personFound.numbers.filter(n => n !== newNumber), newNumber]
+                    numbers: [...numbersPerson, newNumber]
                 }
 
                 personServiceUpdate(personWithUpdatedNumbers, persons, inputFilterPersons);
@@ -111,10 +117,10 @@ export default function App() {
                 updateStates(updatedPersonsArray, textToFilter);
 
                 console.log(`Info: "${newObject.name}" added.`);
-                messageDiplayTimeout(`"${newObject.name}" added.`, setNewMessage, 5000);
+                messageDisplayTimeout(`"${newObject.name}" added.`, setNewMessage, 5000);
             }).catch(error => {
                 console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                messageDiplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
+                messageDisplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
             })
     }
 
@@ -127,17 +133,17 @@ export default function App() {
                 let updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)
 
                 updateStates(updatedPersonsArray, textToFilter)
-                messageDiplayTimeout(`Updated number "${oldNumbers[oldNumbers.length - 1]}" to ${newNumbers[newNumbers.length - 1]}.`, setNewMessage, 5000);
+                messageDisplayTimeout(`Updated number "${oldNumbers[oldNumbers.length - 1]}" to ${newNumbers[newNumbers.length - 1]}.`, setNewMessage, 5000);
 
             }).catch(error => {
                 console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                messageDiplayTimeout(`Error: it was not possible to update. please refresh the page.`,
+                messageDisplayTimeout(`Error: it was not possible to update. please refresh the page.`,
                     handleNewMessage, 5000)
             })
     }
 
     return (
-        <div>
+        <div className='container flex-column-center container-center'>
             <h1>Phonebook</h1>
 
             <Notification message={newMessage} />
@@ -151,14 +157,15 @@ export default function App() {
                 handleNewNumberChange={handleNewNumberChange}
             />
 
-            {persons.length > 0 && <>
-                <h2>Persons List</h2>
-
+            <h2>Contacts List</h2>
+            {persons.length < 1 ? <p>No contacts</p> : <>
                 <PersonsFilter
                     text="Filter person by name"
                     value={inputFilterPersons}
                     onChange={handleInputFilterPersonsChange} />
-
+                
+                {filteredPersons.length < 1 && (<p>No matches</p>)}
+                
                 <PersonsList
                     persons={filteredPersons}
                     handleNewMessage={handleNewMessage}

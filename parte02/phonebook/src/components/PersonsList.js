@@ -1,18 +1,19 @@
 import personService from "../services/personService"
-import OrderedListNumbers from "./OrderedListNumber"
+import NumbersList from "./NumbersList"
 
-import { messageDiplayTimeout } from "../utils"
+import { messageDisplayTimeout } from "../utils"
 
 export default function PersonsList({ persons, onDeletePerson, onUpdateNumber, handleNewMessage }) {
-    return (
-        persons.map((person) =>
+    return (<div className='container flex-column' style={{ minWidth: "330px" }} >
+        {persons.map((person) =>
             <PersonDetails
                 key={person.id}
                 person={person}
                 onDeletePerson={onDeletePerson}
                 onUpdateNumber={onUpdateNumber}
                 handleNewMessage={handleNewMessage}
-            />)
+            />)}
+    </div>
     )
 }
 
@@ -31,7 +32,7 @@ function PersonDetails({ person, onDeletePerson, onUpdateNumber, handleNewMessag
                 id: {person.id} <br />
                 Current Number: {person.numbers[person.numbers.length - 1]}<br />
                 All Numbers:
-                <OrderedListNumbers
+                <NumbersList
                     person={person}
                     onUpdateNumber={onUpdateNumber}
                     handleNewMessage={handleNewMessage} />
@@ -52,11 +53,11 @@ function DeletePersonButton({ textButton, person, onDeletePerson, handleNewMessa
                     onDeletePerson(person, "delete");
                 }).catch(error => {
                     console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                    messageDiplayTimeout(`Error: Person has already been deleted. please refresh the page.`,
+                    messageDisplayTimeout(`Error: Person has already been deleted. please refresh the page.`,
                         handleNewMessage, 5000)
                 })
         }
     }
 
-    return <button onClick={confirmDelete}>{textButton}</button>
+    return <button className="btn danger" onClick={confirmDelete}>{textButton}</button>
 }
