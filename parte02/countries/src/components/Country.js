@@ -9,7 +9,7 @@ export default function Country({ country }) {
     }
 
     return (
-        <div>
+        <div style={{ width: "460px", marginBottom: "5px" }}>
             {country.name.common}
             <ButtonShowHidden onClick={handleShowClick} show={show} />
             {show && <CountryInfo country={country} />}
@@ -18,7 +18,7 @@ export default function Country({ country }) {
 }
 
 function ButtonShowHidden({ onClick, show }) {
-    return (<button onClick={onClick} style={{marginLeft: "10px"}}>
+    return (<button onClick={onClick} style={{ marginLeft: "10px" }}>
         {show ? "Hidden" : "Show"}
     </button>)
 }
