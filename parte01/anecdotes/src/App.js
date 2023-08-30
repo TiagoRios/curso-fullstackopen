@@ -9,7 +9,8 @@ export default function App() {
         'Otimização prematura é a raiz de todo o mal.',
         'Antes de mais nada, depurar é duas vezes mais difícil do que escrever o código. Portanto, se você escrever o código da forma mais inteligente possível, você, por definição, não é inteligente o suficiente para depurá-lo.',
         'Programar sem o uso extremamente intenso do console.log é o mesmo que um médico se recusar a usar raio-x ou testes sanguíneos ao diagnosticar pacientes.',
-        'A única maneira de ir rápido é ir bem.'
+        'A única maneira de ir rápido é ir bem.',
+        'Vem comigo que é sucesso!'
     ]
 
     const [selected, setSelected] = useState(0)
