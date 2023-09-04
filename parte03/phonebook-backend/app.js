@@ -1,10 +1,12 @@
 import fs from "fs";
+import cors from "cors";
 import path from "path";
 import morgan from "morgan";
 import express from "express";
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 // Defining custom token.
@@ -12,7 +14,7 @@ morgan.token('body', (req, res) => JSON.stringify(req.body))
 morgan.token('date', (req, res) => {
     return JSON.stringify(new Date().toLocaleString())
 })
-
+    
 // 1ª way - Using a predefined format string
 // tiny = :method :url :status :res[content-length] - :response-time ms
 app.use(morgan('tiny')) // for all.
@@ -43,12 +45,12 @@ let persons = [
     {
         "id": 1,
         "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
+        "numbers": ["39-23-6423122"]
     },
     {
         "id": 32323,
         "name": "Noel",
-        "number": "25-12-3232323"
+        "numbers": ["25-12-3232323"]
     }
 ]
 
@@ -96,7 +98,7 @@ app.use(morgan('     :body'))
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if (!body.name || !body.number) {
+    if (!body.name || !body.numbers) {
         return response.status(400).json({
             error: 'name and/or number are required'
             // error: 'data missing'
@@ -113,9 +115,9 @@ app.post('/api/persons', (request, response) => {
     }
 
     const person = {
-        name: body.name,
-        number: body.number,
         id: generateId(),
+        name: body.name,
+        numbers: [body.numbers],
     }
 
     persons = [...persons, person];

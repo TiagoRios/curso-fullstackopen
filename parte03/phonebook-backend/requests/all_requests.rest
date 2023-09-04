@@ -19,7 +19,7 @@ content-type: application/json
 
 {
     "name": "new person",
-    "number": "040-123456"
+    "numbers": ["040-123456"]
 }
 
 ###
@@ -28,5 +28,5 @@ content-type: application/json
 
 {
   # "name": "new person",
-    "number": "040-123456"
+    "number": ["040-123456"]
 }
