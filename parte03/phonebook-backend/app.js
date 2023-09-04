@@ -8,13 +8,14 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static('build'))
 
 // Defining custom token.
 morgan.token('body', (req, res) => JSON.stringify(req.body))
 morgan.token('date', (req, res) => {
     return JSON.stringify(new Date().toLocaleString())
 })
-    
+
 // 1ª way - Using a predefined format string
 // tiny = :method :url :status :res[content-length] - :response-time ms
 app.use(morgan('tiny')) // for all.
@@ -34,12 +35,12 @@ app.use(morgan('tiny')) // for all.
 //     ].join(' ')
 // }))
 
-// create a write stream (in append mode)
-let accessLogStream = fs.createWriteStream(path.join(path.resolve(), 'requests/all-requests.log'), { flags: 'a' })
 
 // 4ª maneira - write logs to a file
+// create a write stream (in append mode)
+// let accessLogStream = fs.createWriteStream(path.join(path.resolve(), 'requests/all-requests.log'), { flags: 'a' })
 // Records all requests in the log file.
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body :date', { stream: accessLogStream }))
+// app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body :date', { stream: accessLogStream }))
 
 let persons = [
     {
@@ -129,6 +130,8 @@ app.use((request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 })
 
-const PORT = 3003;
-app.listen(PORT);
-console.log(`executando na porta: ${PORT}`);
+// Ambos fly.io e render utilizam essa variável de ambiente
+const PORT = 3001
+app.listen(PORT, () => {
+    console.log(`executando na porta: ${PORT}`);
+});

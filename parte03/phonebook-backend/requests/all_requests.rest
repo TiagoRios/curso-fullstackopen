@@ -30,3 +30,6 @@ content-type: application/json
   # "name": "new person",
     "number": ["040-123456"]
 }
+
+###
+GET https://phonelist.fly.dev/api/persons
