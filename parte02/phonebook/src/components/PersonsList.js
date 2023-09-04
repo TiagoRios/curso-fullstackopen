@@ -49,7 +49,6 @@ function DeletePersonButton({ textButton, person, onDeletePerson, handleNewMessa
             personService
                 .deletee(person.id) // Delete person.
                 .then(() => {
-                    console.log('Info: person deleted.');
                     onDeletePerson(person, "delete");
                 }).catch(error => {
                     console.log(`Error: ${error.response.statusText} - ${error.message}`);

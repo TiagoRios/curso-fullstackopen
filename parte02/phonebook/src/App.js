@@ -52,7 +52,7 @@ export default function App() {
         let updatedPersonsArray = persons.filter(person => person.id !== updatedPerson.id) // Delete person
         updateStates(updatedPersonsArray, inputFilterPersons)
 
-        console.log(`"${capitalize(updatedPerson.name)}" deleted.`);
+        console.log(`Info: Contact "${updatedPerson.name}" deleted.`);
         messageDisplayTimeout(`"${capitalize(updatedPerson.name)}" deleted.`, setNewMessage, 5000);
     }
 
@@ -60,8 +60,8 @@ export default function App() {
         let updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson) // Update person numbers
         updateStates(updatedPersonsArray, inputFilterPersons)
 
-        console.log(`Updated "${capitalize(updatedPerson.name)}" numbers.`);
-        messageDisplayTimeout(`Updated "${capitalize(updatedPerson.name)}" numbers.`, setNewMessage, 5000);
+        console.log(`Info: Updated "${capitalize(updatedPerson.name)}'s" numbers.`);
+        messageDisplayTimeout(`Updated "${capitalize(updatedPerson.name)}'s" numbers.`, setNewMessage, 5000);
     }
 
     let handleSubmit = (event) => {
@@ -116,7 +116,7 @@ export default function App() {
                 let updatedPersonsArray = persons.concat(data); // adds new object at the end.
                 updateStates(updatedPersonsArray, textToFilter);
 
-                console.log(`Info: "${newObject.name}" added.`);
+                console.log(`Info: Contact "${newObject.name}" added.`);
                 messageDisplayTimeout(`"${newObject.name}" added.`, setNewMessage, 5000);
             }).catch(error => {
                 console.log(`Error: ${error.response.statusText} - ${error.message}`);
@@ -132,6 +132,7 @@ export default function App() {
                 let oldNumbers = persons.find(p => p.id === updatedPerson.id).numbers;
                 let updatedPersonsArray = persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson)
 
+                console.log(`Info: Contact "${updatedPerson.name}". Updated numbers`);
                 updateStates(updatedPersonsArray, textToFilter)
                 messageDisplayTimeout(`Updated number "${oldNumbers[oldNumbers.length - 1]}" to ${newNumbers[newNumbers.length - 1]}.`, setNewMessage, 5000);
 
@@ -163,9 +164,9 @@ export default function App() {
                     text="Filter person by name"
                     value={inputFilterPersons}
                     onChange={handleInputFilterPersonsChange} />
-                
+
                 {filteredPersons.length < 1 && (<p>No matches</p>)}
-                
+
                 <PersonsList
                     persons={filteredPersons}
                     handleNewMessage={handleNewMessage}
