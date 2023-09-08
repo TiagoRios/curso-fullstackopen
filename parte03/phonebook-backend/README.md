@@ -13,3 +13,10 @@
 [Phonebook](https://phonelist.fly.dev/)
 
 > Hosted on [flyio](https://fly.io/)
+
+## Run project:
+
+```node app.js MONGODB_URI=´mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority´```
+
+### set the environment variable in flyio:
+```fly secrets set MONGODB_URI='mongodb+srv://tiago:<password>@cluster0.o1opl.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority'```

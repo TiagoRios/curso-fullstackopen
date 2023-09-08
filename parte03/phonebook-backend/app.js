@@ -4,6 +4,8 @@ import path from "path";
 import morgan from "morgan";
 import express from "express";
 
+import Person from "./models/person.js"
+
 const app = express()
 
 app.use(cors())
@@ -42,23 +44,6 @@ app.use(morgan('tiny')) // for all.
 // Records all requests in the log file.
 // app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body :date', { stream: accessLogStream }))
 
-let persons = [
-    {
-        "id": 1,
-        "name": "Mary Poppendieck",
-        "numbers": ["39-23-6423122"]
-    },
-    {
-        "id": 32323,
-        "name": "Noel",
-        "numbers": ["25-12-3232323"]
-    }
-]
-
-app.get('/', (req, res) => {
-    res.send('<h1>Home</h1>')
-})
-
 app.get('/info', (request, response) => {
     const currentDate = new Date();
     response.send(`
@@ -68,18 +53,22 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(persons => {
+        res.json(persons)
+    });
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id);
-
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end();
-    }
+    // const id = Number(req.params.id) // why?
+    Person.findById(req.params.id).then(person => {
+        if(person){
+            res.json(person)
+        }else {
+            res.status(404).end();
+        }
+    }).catch((error) => {
+        console.log(`Error: ${error.message}`)
+    })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -102,7 +91,6 @@ app.post('/api/persons', (request, response) => {
     if (!body.name || !body.numbers) {
         return response.status(400).json({
             error: 'name and/or number are required'
-            // error: 'data missing'
         })
     }
 
@@ -111,26 +99,26 @@ app.post('/api/persons', (request, response) => {
     if (foundPerson) {
         return response.status(400).json({
             error: `'${body.name}' already exists in the list`
-            // error: `name must be unique`
         })
     }
 
-    const person = {
-        id: generateId(),
+    const person = new Person({
         name: body.name,
-        numbers: [body.numbers],
-    }
+        numbers: body.numbers,
+    })
 
-    persons = [...persons, person];
-
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    }).catch((error) => {
+        return response.json({ error: error.message })
+    })
 })
 
 app.use((request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 })
 
-// Ambos fly.io e render utilizam essa variável de ambiente
+// const PORT = process.env.PORT
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`executando na porta: ${PORT}`);
