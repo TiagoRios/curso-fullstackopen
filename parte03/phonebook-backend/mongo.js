@@ -1,3 +1,11 @@
+// Exercise 3.12
+
+// CLI: insert new person
+// node mongo.js myPassword personName numberPhone
+
+// CLI: find all persons
+// > node mango.js myPassword
+
 import mongoose from 'mongoose';
 
 if (process.argv.length < 3) {
@@ -7,13 +15,22 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2]
 
-const URL = `mongodb+srv://tiago:${password}@cluster0.xssg27f.mongodb.net/?retryWrites=true&w=majority`
+const URL = `mongodb+srv://tiago:${password}@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority`
 
 mongoose.connect(URL);
 
-const personScheme = new mongoose.Schema({ name: String, numbers: [] })
+let personSchema = new mongoose.Schema({ name: String, numbers: [] }, { versionKey: false })
 
-const Person = mongoose.model('person', personScheme)
+// TRANSFORMA O OBJETOID EM STRING E REMOVE O (__V)ERSION.
+personSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
+})
+
+const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length === 5) {
 
@@ -39,6 +56,7 @@ if (process.argv.length === 5) {
         console.log("\nphonebook:");
         persons.forEach(person => {
             console.log(`${person.name} ${person.numbers.map((x, index) => (`N${index + 1}(${x})`)).join(" ")}`)
+            // console.log(person)
         });
         console.log(`\nRegisters: ${persons.length} contact(s)\n`);
     }).catch((error) => {
