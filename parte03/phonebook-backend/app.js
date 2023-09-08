@@ -9,8 +9,14 @@ import Person from "./models/person.js"
 const app = express()
 
 app.use(cors())
-app.use(express.json())
 app.use(express.static('build'))
+app.use(express.json())
+
+
+/* ==================================================
+                    morgan settings
+   ==================================================*/
+
 
 // Defining custom token.
 morgan.token('body', (req, res) => JSON.stringify(req.body))
@@ -44,43 +50,53 @@ app.use(morgan('tiny')) // for all.
 // Records all requests in the log file.
 // app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body :date', { stream: accessLogStream }))
 
-app.get('/info', (request, response) => {
+
+/* ==================================================
+                        Endpoints
+   ==================================================*/
+
+
+app.get('/info', (request, response, next) => {
     const currentDate = new Date();
-    response.send(`
+
+    Person.find({}).then(persons => {
+        response.send(`
         <p>Phonebook has info for ${persons.length} people</p>
         <p>${currentDate}</p>`
-    )
+        )
+    })
+    .catch(error => next(error));
 })
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (request, response, next) => {
     Person.find({}).then(persons => {
-        res.json(persons)
-    });
+        response.json(persons)
+    })
+    .catch(error => next(error));
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (request, response, next) => {
     // const id = Number(req.params.id) // why?
-    Person.findById(req.params.id).then(person => {
-        if(person){
-            res.json(person)
-        }else {
-            res.status(404).end();
+    Person.findById(request.params.id).then(person => {
+        if (person) {
+            response.json(person)
+        } else {
+            response.status(404).end();
         }
     }).catch((error) => {
-        console.log(`Error: ${error.message}`)
+        return next(error)
+        // console.log(`Error: ${error.message}`);
+        // response.status(400).send({ error: 'malformatted id' });
     })
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    res.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
 })
-
-const generateId = () => {
-    return Math.floor(Math.random() * 100000)
-}
 
 // Applied only for post method and unknown endpoint.
 app.use(morgan('     :body'))
@@ -91,14 +107,6 @@ app.post('/api/persons', (request, response) => {
     if (!body.name || !body.numbers) {
         return response.status(400).json({
             error: 'name and/or number are required'
-        })
-    }
-
-    let foundPerson = persons.find(x => x.name.toLowerCase() === body.name.toLowerCase())
-
-    if (foundPerson) {
-        return response.status(400).json({
-            error: `'${body.name}' already exists in the list`
         })
     }
 
@@ -114,9 +122,42 @@ app.post('/api/persons', (request, response) => {
     })
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const persons = {
+        name: body.name,
+        numbers: body.numbers,
+    }
+
+    Person.findByIdAndUpdate(request.params.id, persons, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
+})
+
+/* ==================================================
+                    last middlewares
+   ==================================================*/
+
+
 app.use((request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+// Este deve ser o último middleware a ser carregado.
+app.use(errorHandler)
 
 // const PORT = process.env.PORT
 const PORT = 3001

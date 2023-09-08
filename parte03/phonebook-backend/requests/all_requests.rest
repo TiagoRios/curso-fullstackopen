@@ -5,7 +5,7 @@ GET http://localhost:3001/api/persons
 GET http://localhost:3001/api/persons/1
 
 ###
-GET http://localhost:3001/api/persons/98765
+GET http://localhost:3001/api/persons/64faa24b6b25ae3fc6ad8462
 
 ###
 DELETE http://localhost:3001/api/persons/1
@@ -28,8 +28,17 @@ content-type: application/json
 
 {
   # "name": "new person",
-    "number": ["040-123456"]
+    "numbers": ["040-123456"]
 }
 
 ###
 GET https://phonelist.fly.dev/api/persons
+
+###
+PUT http://localhost:3001/api/persons/64faa24b6b25ae3fc6ad8462
+content-type: application/json
+
+{
+    "name": "new person",
+    "numbers": ["040-123456", "345-345335"]
+}
