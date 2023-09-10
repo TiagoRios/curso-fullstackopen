@@ -18,7 +18,7 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-    "name": "new person",
+    "name": "new person 2",
     "numbers": ["040-123456"]
 }
 
@@ -32,13 +32,58 @@ content-type: application/json
 }
 
 ###
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "new person"
+    #"numbers": ["040-123456"]
+}
+
+###
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+    "name": "p",
+    "numbers": ["040-123456"]
+}
+
+###
 GET https://phonelist.fly.dev/api/persons
+
+###
+PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
+content-type: application/json
+
+{
+    "name": "Updated Name",
+    "numbers": ["040-1234567"]
+}
 
 ###
 PUT http://localhost:3001/api/persons/64faa24b6b25ae3fc6ad8462
 content-type: application/json
 
 {
-    "name": "new person",
-    "numbers": ["040-123456", "345-345335"]
+    "name": "a",
+    "numbers": ["040-123456"]
+}
+
+###
+PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
+content-type: application/json
+
+{
+    "name": "New Person",
+    "numbers": ["1234"]
+}
+
+###
+PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
+content-type: application/json
+
+{
+    "name": "New Person",
+    "numbers": ["1234-5678"]
 }
