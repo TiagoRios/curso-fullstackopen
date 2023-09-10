@@ -119,8 +119,11 @@ export default function App() {
                 console.log(`Info: Contact "${newObject.name}" added.`);
                 messageDisplayTimeout(`"${newObject.name}" added.`, setNewMessage, 5000);
             }).catch(error => {
-                console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                messageDisplayTimeout(`Error: ${error.response.statusText} - ${error.message}`, setNewMessage, 5000);
+                let errorResponse = error.response;
+                let errorMessage = `Error: ${errorResponse.statusText} - ${errorResponse.data.error.message}`;
+
+                console.log(errorMessage);
+                messageDisplayTimeout(errorMessage, setNewMessage, 5000);
             })
     }
 
@@ -137,9 +140,11 @@ export default function App() {
                 messageDisplayTimeout(`Updated number "${oldNumbers[oldNumbers.length - 1]}" to ${newNumbers[newNumbers.length - 1]}.`, setNewMessage, 5000);
 
             }).catch(error => {
-                console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                messageDisplayTimeout(`Error: it was not possible to update. please refresh the page.`,
-                    handleNewMessage, 5000)
+                let errorResponse = error.response;
+                let errorMessage = `Error: ${errorResponse.statusText} - ${errorResponse.data.error.message}`;
+
+                console.log(errorMessage);
+                messageDisplayTimeout(errorMessage, handleNewMessage, 5000)
             })
     }
 
