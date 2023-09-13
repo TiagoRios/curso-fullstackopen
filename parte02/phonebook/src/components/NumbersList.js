@@ -58,9 +58,10 @@ function DeleteNumberButton({ textButton, number, person, onDeleteNumber, handle
                 .then(() => {
                     onDeleteNumber(personWithUpdatedNumbers, "delete")
                 }).catch(error => {
-                    console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                    messageDisplayTimeout(`Error: Person has already been deleted. please refresh the page.`,
-                        handleNewMessage, 5000)
+                    let errorResponse = error.response;
+                    let errorMessage = `Error: ${errorResponse.statusText} - ${errorResponse.data.error.message}`;
+
+                    messageDisplayTimeout(errorMessage, handleNewMessage, 5000)
                 })
         }
     }
@@ -76,7 +77,7 @@ function EditNumberButton({ textButton, number, person, onUpdateNumber, handleNe
 
         if (confirmed) {
             let stringNumber = window.prompt("please edit the number:", number)
-            if (stringNumber === "" || stringNumber === undefined || stringNumber === null || stringNumber.length < 3) { // other check
+            if (stringNumber === "" || stringNumber === undefined || stringNumber === null || stringNumber.length < 8) { // other check
                 window.alert("Provide a valid phone number.")
             } else if (person.numbers.filter(p => p === stringNumber).length >= 1) {
                 window.alert(`Number ${stringNumber} already exists in the list.`)
@@ -91,9 +92,10 @@ function EditNumberButton({ textButton, number, person, onUpdateNumber, handleNe
                     .then(() => {
                         onUpdateNumber(personWithUpdatedNumbers, "update")
                     }).catch(error => {
-                        console.log(`Error: ${error.response.statusText} - ${error.message}`);
-                        messageDisplayTimeout(`Error: it was not possible to update. please refresh the page.`,
-                            handleNewMessage, 5000)
+                        let errorResponse = error.response;
+                        let errorMessage = `Error: ${errorResponse.statusText} - ${errorResponse.data.error.message}`;
+
+                        messageDisplayTimeout(errorMessage, handleNewMessage, 5000)
                     })
             }
         }
