@@ -102,9 +102,8 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.use(morgan('     :body'))
 
 app.post('/api/persons', (request, response, next) => {
-    const {name, numbers} = request.body
+    const { name, numbers } = request.body
 
-    /* TODO - precisar validar os numeros inseridos exercicio 3.20*/
     const person = new Person({
         name: name,
         numbers: numbers,
@@ -114,21 +113,15 @@ app.post('/api/persons', (request, response, next) => {
         response.json(savedPerson)
     }).catch((error) => {
         return next(error)
-        // return response.json({ error: error.message })
     })
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
     const { name, numbers } = request.body
 
-    // const persons = {
-    //     name: name,
-    //     numbers: numbers,
-    // }
-
     Person.findByIdAndUpdate(
         request.params.id,
-        {name, numbers},
+        { name, numbers },
         {
             new: true,
             runValidators: true,
@@ -154,7 +147,7 @@ const errorHandler = (error, request, response, next) => {
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
     } else if (error.name === 'ValidationError') {
-        return response.status(400).send({ error: error.errors.name.properties })
+        return response.status(400).send({ error: error })
     }
 
     next(error)

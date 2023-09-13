@@ -1,11 +1,14 @@
 ###
+GET https://phonelist.fly.dev/api/persons
+
+###
 GET http://localhost:3001/api/persons
 
 ###
 GET http://localhost:3001/api/persons/1
 
 ###
-GET http://localhost:3001/api/persons/64faa24b6b25ae3fc6ad8462
+GET http://localhost:3001/api/persons/650130953af189e33f6896b2
 
 ###
 DELETE http://localhost:3001/api/persons/1
@@ -18,8 +21,8 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-    "name": "new person 2",
-    "numbers": ["040-123456"]
+    "name": "new person",
+    "numbers": ["12345678", "12-12345678", "123-12345678"]
 }
 
 ###
@@ -27,8 +30,7 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-  # "name": "new person",
-    "numbers": ["040-123456"]
+    "numbers": ["040-12345678"]
 }
 
 ###
@@ -37,7 +39,6 @@ content-type: application/json
 
 {
     "name": "new person"
-    #"numbers": ["040-123456"]
 }
 
 ###
@@ -46,44 +47,49 @@ content-type: application/json
 
 {
     "name": "p",
-    "numbers": ["040-123456"]
+    "numbers": ["456-12345678"]
 }
 
 ###
-GET https://phonelist.fly.dev/api/persons
-
-###
-PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
+PUT http://localhost:3001/api/persons/650130953af189e33f6896b2
 content-type: application/json
 
 {
     "name": "Updated Name",
-    "numbers": ["040-1234567"]
+    "numbers": ["1234567"]
 }
 
 ###
-PUT http://localhost:3001/api/persons/64faa24b6b25ae3fc6ad8462
+PUT http://localhost:3001/api/persons/650130953af189e33f6896b2
+content-type: application/json
+
+{
+    "name": "New Person",
+    "numbers": ["87654321", "09-87654321", "009-87654321"]
+}
+
+###
+PUT http://localhost:3001/api/persons/650130953af189e33f6896b2
+content-type: application/json
+
+{
+    "name": "New Person",
+    "numbers": ["87654321", "09-87654321", "009-87654321","12345678"]
+}
+
+###
+PUT http://localhost:3001/api/persons/650130953af189e33f6896b2
 content-type: application/json
 
 {
     "name": "a",
-    "numbers": ["040-123456"]
+    "numbers": ["12-1234567"]
 }
 
 ###
-PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
+PUT http://localhost:3001/api/persons/650130953af189e33f6896b2
 content-type: application/json
 
 {
     "name": "New Person",
-    "numbers": ["1234"]
-}
-
-###
-PUT http://localhost:3001/api/persons/64fd1488f1e9e426eddb7ead
-content-type: application/json
-
-{
-    "name": "New Person",
-    "numbers": ["1234-5678"]
 }
