@@ -1,0 +1,18 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": ["airbnb", "prettier"],
+
+  "plugins": ["prettier"],
+  "rules": {
+    "no-console": "off",
+    "no-underscore-dangle": "off",
+    "eqeqeq": "error",
+    "no-trailing-spaces": "error",
+    "object-curly-spacing": ["error", "always"],
+    "arrow-spacing": ["error", { "before": true, "after": true }]
+  }
+}
