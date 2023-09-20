@@ -8,15 +8,23 @@
 
 ![Alt text](<Phonebook app.png>)
 
-## Access the project at:
+## Access the project: [Phonebook](https://phonelist.fly.dev/)
 
-[Phonebook](https://phonelist.fly.dev/)
+## Run the project:
 
-> Hosted on [flyio](https://fly.io/)
+<ol>
+    <li>clone this project.</li>
+    <li>Create an account on MongoDB Atlas.</li>
+    <li>configure a database.</li>
+    <li>Copy the MongoDB Atlas connection url.</li>
+</ol>
 
-## Run project:
+### Defining .env file
+
+create a ".env" file in the project root and add the environment variable with the connection url:
+
+```MONGODB_URI=mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority```
+
+### Without defining the ".env" file, using CLI:
 
 ```node app.js MONGODB_URI=´mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority´```
-
-### set the environment variable in flyio:
-```fly secrets set MONGODB_URI='mongodb+srv://tiago:<password>@cluster0.o1opl.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority'```
