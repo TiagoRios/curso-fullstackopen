@@ -6,8 +6,8 @@ POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
-    "title":"titulo 3",
-    "author": "asdf",
+    "title":"titulo do blog",
+    "author": "dfdf",
     "url": "minhaUrl",
-    "likes": 42323
+    "likes": 100
 }

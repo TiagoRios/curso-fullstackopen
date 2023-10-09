@@ -4,15 +4,29 @@
     "es2021": true,
     "jest": true
   },
-  "extends": ["airbnb", "prettier"],
-
-  "plugins": ["prettier"],
+  "extends": [
+    "airbnb",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
+    "import/extensions": "off",
     "no-console": "off",
     "no-underscore-dangle": "off",
     "eqeqeq": "error",
     "no-trailing-spaces": "error",
-    "object-curly-spacing": ["error", "always"],
-    "arrow-spacing": ["error", { "before": true, "after": true }]
+    "object-curly-spacing": [
+      "error",
+      "always"
+    ],
+    "arrow-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ]
   }
 }
