@@ -46,9 +46,32 @@ function mostBlogs(blogs) {
     return totalAuthorsBlogs[0];
 }
 
+function mostLikes(blogs) {
+
+    let totalAuthorsLikes = [];
+
+    blogs.forEach(blog => {
+
+        const authorFound = totalAuthorsLikes.find(x => x.author === blog.author);
+
+        if (!authorFound) {
+            totalAuthorsLikes.push({ author: blog.author, likes: blog.likes })
+
+        } else {
+            totalAuthorsLikes = totalAuthorsLikes.filter(x => x.author !== blog.author); // remove from array.
+            totalAuthorsLikes.push({ author: blog.author, likes: blog.likes + authorFound.likes })
+        }
+    })
+
+    totalAuthorsLikes.sort((a, b) => b.likes - a.likes)
+
+    return totalAuthorsLikes[0];
+}
+
 export default {
     dummy,
     mostBlogs,
+    mostLikes,
     totalLikes,
     favoriteBlog,
 }

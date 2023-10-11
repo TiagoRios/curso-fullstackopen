@@ -24,6 +24,11 @@ const AUTHOR_MOST_BLOGS = {
     blogs: 3,
 }
 
+const AUTHOR_MOST_LIKES = {
+    author: "Edsger W. Dijkstra",
+    likes: 17
+}
+
 beforeAll(() => {
     firstBlog = BLOGS.filter((blog, index) => index === 0)
 })
@@ -80,5 +85,14 @@ describe('Author with Most blogs', () => {
 
         expect(listHelper.mostBlogs(BLOGS))
             .toEqual(AUTHOR_MOST_BLOGS)
+    })
+})
+
+describe('Author with Most Likes', () => {
+
+    test('first author with more likes (total)', () => {
+
+        expect(listHelper.mostLikes(BLOGS))
+            .toEqual(AUTHOR_MOST_LIKES)
     })
 })
