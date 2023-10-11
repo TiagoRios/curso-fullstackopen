@@ -17,6 +17,13 @@ const SECOND_FAVORITE_BLOG = {
     likes: 12,
 }
 
+const FAVORITE_BLOGS = [FIRST_FAVORITE_BLOG, SECOND_FAVORITE_BLOG]
+
+const AUTHOR_MOST_BLOGS = {
+    author: "Robert C. Martin",
+    blogs: 3,
+}
+
 beforeAll(() => {
     firstBlog = BLOGS.filter((blog, index) => index === 0)
 })
@@ -55,13 +62,23 @@ describe('Favorite blogs', () => {
 
     test('first blog with more likes', () => {
 
-        expect(listHelper.favoriteBlog(BLOGS))
-            .toEqual([FIRST_FAVORITE_BLOG])
+        const FAVORITE = listHelper.favoriteBlog(BLOGS)
+
+        expect(FAVORITE[0]).toEqual(FIRST_FAVORITE_BLOG)
     })
 
     test('All favorite blogs with the same number of likes.', () => {
 
         expect(listHelper.favoriteBlog([...BLOGS, SECOND_FAVORITE_BLOG]))
-            .toEqual([FIRST_FAVORITE_BLOG, SECOND_FAVORITE_BLOG])
+            .toEqual(FAVORITE_BLOGS)
+    })
+})
+
+describe('Author with Most blogs', () => {
+
+    test('first author with more blogs', () => {
+
+        expect(listHelper.mostBlogs(BLOGS))
+            .toEqual(AUTHOR_MOST_BLOGS)
     })
 })
