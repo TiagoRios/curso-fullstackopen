@@ -14,7 +14,14 @@ blogsRouter.get('/', (request, response) => {
 })
 
 blogsRouter.post('/', (request, response) => {
-    const blog = new Blog(request.body)
+
+    let { body } = request;
+
+    if (!body.likes) {
+        body = { ...body, likes: 0 }
+    }
+
+    const blog = new Blog(body)
 
     blog
         .save()

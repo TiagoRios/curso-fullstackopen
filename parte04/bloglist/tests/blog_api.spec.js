@@ -57,7 +57,7 @@ test('Has the id property', async () => {
     expect(response.body[0].id).toBeDefined();
 })
 
-test.only('there are seven(7) blogs, after adding one(1) blog ', async () => {
+test('there are seven(7) blogs, after adding one(1) blog', async () => {
 
     const newBlog = {
         title: "title 1",
@@ -79,6 +79,28 @@ test.only('there are seven(7) blogs, after adding one(1) blog ', async () => {
     expect(response.body).toHaveLength(blogs.length + 1)
 
     expect(titles).toContain('title 1')
+})
+
+test('likes property is missing, set the default value to 0', async () => {
+
+    await Blog.deleteMany({})
+
+    const newBlog = {
+        title: "title 2",
+        author: "author 2",
+        url: "https://testando.com/",
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    expect(response.body[0].likes).toBe(0);
+    expect(response.body[0].likes).toBeDefined();
 })
 
 afterAll(async () => {
