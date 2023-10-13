@@ -10,7 +10,7 @@ import app from '../app.js';
 
 const api = supertest(app);
 
-// não executa na ordem.. erro no segundo teste: 
+// não executa na ordem.. erro no segundo teste:
 // the first blog is about HTTP methods
 // beforeEach(async () => {
 //     await Blog.deleteMany({})
@@ -49,6 +49,12 @@ test('the first blog is about HTTP methods', async () => {
     const response = await api.get('/api/blogs')
 
     expect(response.body[0].author).toBe('Michael Chan')
+})
+
+test.only('Has the id property', async () => {
+    const response = await api.get('/api/blogs')
+
+    expect(response.body[0].id).toBeDefined();
 })
 
 afterAll(async () => {
