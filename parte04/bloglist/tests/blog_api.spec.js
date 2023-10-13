@@ -51,10 +51,34 @@ test('the first blog is about HTTP methods', async () => {
     expect(response.body[0].author).toBe('Michael Chan')
 })
 
-test.only('Has the id property', async () => {
+test('Has the id property', async () => {
     const response = await api.get('/api/blogs')
 
     expect(response.body[0].id).toBeDefined();
+})
+
+test.only('there are seven(7) blogs, after adding one(1) blog ', async () => {
+
+    const newBlog = {
+        title: "title 1",
+        author: "author 1",
+        url: "https://testando.com/",
+        likes: 5,
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+
+    const titles = response.body.map(res => res.title)
+
+    expect(response.body).toHaveLength(blogs.length + 1)
+
+    expect(titles).toContain('title 1')
 })
 
 afterAll(async () => {
