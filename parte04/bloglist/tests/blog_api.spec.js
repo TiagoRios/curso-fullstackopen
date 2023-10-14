@@ -18,26 +18,9 @@ const BLOG_URL = "https://testando.com/";
 const BLOG_TITLE = "Booooommm";
 const BLOG_AUTHOR_NAME = "Edsger W. Dijkstra";
 
-// não executa na ordem.. erro no segundo teste:
-// the first blog is about HTTP methods
-// beforeEach(async () => {
-//     await Blog.deleteMany({})
-
-//     const blogObjects = blogs.map(blog => new Blog(blog))
-
-//     const promiseArray = blogObjects.map(note => note.save())
-
-//     await Promise.all(promiseArray)
-// })
-
-// for...of para executar numa ordem especifica:
 beforeEach(async () => {
     await Blog.deleteMany({})
-
-    for (const blog of blogsMock) {
-        const blogObject = new Blog(blog)
-        await blogObject.save()
-    }
+    await Blog.insertMany(blogsMock)
 })
 
 describe('when there is initially some notes saved', () => {
