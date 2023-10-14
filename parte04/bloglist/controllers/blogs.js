@@ -27,8 +27,17 @@ blogsRouter.post('/', async (request, response, next) => {
     } catch (error) {
         next(error) // or with: response.status(400).send(error)
     }
+})
 
+blogsRouter.delete('/:id', async (request, response, next) => {
 
+    try {
+        await Blog.findByIdAndRemove(request.params.id)
+        response.status(204).end()
+
+    } catch (exception) {
+        next(exception)
+    }
 })
 
 export default blogsRouter;
