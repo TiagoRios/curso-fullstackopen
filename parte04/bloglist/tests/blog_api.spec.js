@@ -18,12 +18,16 @@ const BLOG_URL = "https://testando.com/";
 const BLOG_TITLE = "Booooommm";
 const BLOG_AUTHOR_NAME = "Edsger W. Dijkstra";
 
+const VALID_ID_FORMAT = "0a000a000b00a000000d00f0";
+const INVALID_ID_FORMAT = "invalid_ID_format_1234567890"
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(blogsMock)
 })
 
 describe('when there is initially some notes saved', () => {
+
     test('Blogs are returned as json', async () => {
         await api
             .get(URL_BASE)
@@ -49,6 +53,35 @@ describe('when there is initially some notes saved', () => {
         const response = await api.get(URL_BASE)
 
         expect(response.body[0].id).toBeDefined();
+    })
+})
+
+describe('searching for a specific blog', () => {
+
+    test('by valid id', async () => {
+
+        let response = await api.get(URL_BASE);
+
+        const firstBlog = response.body[0];
+
+        response = await api.get(URL_BASE.concat(`/${firstBlog.id}`));
+
+        expect(response.body).toEqual(firstBlog)
+        expect(response.body.title).toEqual(firstBlog.title)
+    })
+
+    test('by valid id but not existing, Return null', async () => {
+
+        const response = await api.get(URL_BASE.concat(`/${VALID_ID_FORMAT}`));
+
+        expect(response.body).toEqual(null)
+    })
+
+    test('by invalid id', async () => {
+
+        const response = await api.get(URL_BASE.concat(`/${INVALID_ID_FORMAT}`));
+
+        expect(response.body).toEqual({ "error": "malformatted id" })
     })
 })
 
@@ -169,7 +202,7 @@ describe('addition of a new blog', () => {
 
 describe('deleting a blog', () => {
 
-    test('delete by valid id', async () => {
+    test('by valid id', async () => {
 
         let response = await api.get(URL_BASE);
 
@@ -188,12 +221,18 @@ describe('deleting a blog', () => {
         expect(mappedBlog).not.toContain(title);
     })
 
-    test('delete by valid id but not existing, Return 204 - No Content', async () => {
-        const validId = "0a000a000b00a000000d00f0"
+    test('by valid id but not existing, Return 404 - Not Found', async () => {
 
         await api
-            .delete(URL_BASE.concat(`/${validId}`))
-            .expect(204)
+            .delete(URL_BASE.concat(`/${VALID_ID_FORMAT}`))
+            .expect(404)
+    })
+    test('by invalid id, Return 400 - Bad Request', async () => {
+
+
+        await api
+            .delete(URL_BASE.concat(`/${INVALID_ID_FORMAT}`))
+            .expect(400)
     })
 })
 

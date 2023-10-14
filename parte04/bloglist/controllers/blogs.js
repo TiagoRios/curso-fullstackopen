@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import Blog from "../models/blog.js"
+import Blog from "../models/blog.js";
 
 const blogsRouter = Router();
 
@@ -8,6 +8,17 @@ blogsRouter.get('/', async (request, response) => {
 
     const blogs = await Blog.find({})
     response.json(blogs)
+})
+
+blogsRouter.get('/:id', async (request, response, next) => {
+
+    try {
+        const blog = await Blog.findById(request.params.id)
+        response.json(blog);
+
+    } catch (error) {
+        next(error)
+    }
 })
 
 blogsRouter.post('/', async (request, response, next) => {
@@ -32,8 +43,16 @@ blogsRouter.post('/', async (request, response, next) => {
 blogsRouter.delete('/:id', async (request, response, next) => {
 
     try {
-        await Blog.findByIdAndRemove(request.params.id)
-        response.status(204).end()
+        const blog = await Blog.findById(request.params.id)
+
+        if (blog) {
+            await Blog.findByIdAndRemove(request.params.id)
+
+            response.status(204).end()
+
+        } else {
+            response.status(404).end()
+        }
 
     } catch (exception) {
         next(exception)
