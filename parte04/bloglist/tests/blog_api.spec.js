@@ -188,12 +188,12 @@ describe('deleting a blog', () => {
         expect(mappedBlog).not.toContain(title);
     })
 
-    test('delete by invalid id, Return 404 - Not Found', async () => {
-        const invalidId = "123123123123asdasdasdasd"
+    test('delete by valid id but not existing, Return 204 - No Content', async () => {
+        const validId = "0a000a000b00a000000d00f0"
 
         await api
-            .get(URL_BASE.concat(`/${invalidId}`))
-            .expect(404)
+            .delete(URL_BASE.concat(`/${validId}`))
+            .expect(204)
     })
 })
 
