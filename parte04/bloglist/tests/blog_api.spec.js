@@ -113,6 +113,65 @@ test('likes property is missing, set the default value to 0', async () => {
     expect(returnedBlog.likes).toBeDefined();
 })
 
+describe('Return status code 400 - Bad Request', () => {
+
+    test('when missing title', async () => {
+
+        const newBlog = {
+            author: BLOG_AUTHOR_NAME,
+            url: BLOG_URL,
+            likes: 123,
+        }
+
+        await api
+            .post(URL_BASE)
+            .send(newBlog)
+            .expect(400)
+            .expect('Content-Type', APLICATION_JSON)
+
+        const response = await api.get(URL_BASE);
+
+        expect(response.body).toHaveLength(blogsMock.length)
+    })
+
+    test('when missing URL', async () => {
+
+        const newBlog = {
+            title: BLOG_TITLE,
+            author: BLOG_AUTHOR_NAME,
+            likes: 123,
+        }
+
+        await api
+            .post(URL_BASE)
+            .send(newBlog)
+            .expect(400)
+            .expect('Content-Type', APLICATION_JSON)
+
+        const response = await api.get(URL_BASE);
+
+        expect(response.body).toHaveLength(blogsMock.length)
+    })
+
+    test('when title and url missing', async () => {
+
+        const newBlog = {
+            author: BLOG_AUTHOR_NAME,
+            likes: 123,
+        }
+
+        await api
+            .post(URL_BASE)
+            .send(newBlog)
+            .expect(400)
+            .expect('Content-Type', APLICATION_JSON)
+
+        const response = await api.get(URL_BASE);
+
+        expect(response.body).toHaveLength(blogsMock.length)
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })

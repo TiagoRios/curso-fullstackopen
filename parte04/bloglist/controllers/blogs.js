@@ -13,7 +13,7 @@ blogsRouter.get('/', (request, response) => {
         })
 })
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', (request, response, next) => {
 
     let { body } = request;
 
@@ -27,6 +27,9 @@ blogsRouter.post('/', (request, response) => {
         .save()
         .then(result => {
             response.status(201).json(result)
+        })
+        .catch(error => {
+            next(error) // or with: response.status(400).send(error)
         })
 })
 
