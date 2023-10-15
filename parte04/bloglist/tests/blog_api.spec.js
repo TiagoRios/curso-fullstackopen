@@ -236,6 +236,26 @@ describe('deleting a blog', () => {
     })
 })
 
+describe.only('updating a blog', () => {
+
+    test('by valid id, increase by 100 likes', async () => {
+
+        let response = await api.get(URL_BASE);
+
+        const FIRST_BLOG = response.body[0];
+
+        const UPDATED_BLOG = { ...FIRST_BLOG, likes: FIRST_BLOG.likes + 100 }
+
+        await api
+            .put(URL_BASE.concat(`/${FIRST_BLOG.id}`))
+            .send(UPDATED_BLOG)
+
+        response = await api.get(URL_BASE.concat(`/${FIRST_BLOG.id}`))
+
+        expect(response.body.likes).toBe(UPDATED_BLOG.likes)
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
