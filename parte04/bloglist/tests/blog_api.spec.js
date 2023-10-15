@@ -254,6 +254,25 @@ describe.only('updating a blog', () => {
 
         expect(response.body.likes).toBe(UPDATED_BLOG.likes)
     })
+
+    test('by valid id but not existing, return status 404 - Not Found', async () => {
+
+        const UPDATED_BLOG = {
+            id: VALID_ID_FORMAT,
+            author: BLOG_AUTHOR_NAME,
+            title: BLOG_TITLE,
+            url: BLOG_URL,
+            likes: 100,
+        }
+
+        const RESPONSE = await api
+            .put(URL_BASE.concat(`/${UPDATED_BLOG.id}`))
+            .send(UPDATED_BLOG)
+
+
+        expect(RESPONSE.status).toBe(404)
+        expect(RESPONSE.text).toBe("Not Found")
+    })
 })
 
 afterAll(async () => {

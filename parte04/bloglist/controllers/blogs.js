@@ -62,17 +62,26 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 blogsRouter.put('/:id', async (request, response, next) => {
 
     try {
-        const updatedBlog = await Blog.findByIdAndUpdate(
-            request.params.id,
-            { ...request.body },
-            {
-                new: true,
-                runValidators: true,
-                context: "query",
-            }
-        )
 
-        response.json(updatedBlog);
+        const blog = await Blog.findById(request.params.id)
+
+        if (blog) {
+
+            const updatedBlog = await Blog.findByIdAndUpdate(
+                request.params.id,
+                { ...request.body },
+                {
+                    new: true,
+                    runValidators: true,
+                    context: "query",
+                }
+            )
+
+            response.json(updatedBlog);
+
+        } else {
+            response.status(404).send("Not Found");
+        }
 
     } catch (error) {
         next(error)
