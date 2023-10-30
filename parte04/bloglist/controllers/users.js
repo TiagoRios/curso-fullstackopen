@@ -4,6 +4,12 @@ import User from "../models/user.js";
 
 const usersRouter = Router();
 
+usersRouter.get('/', async (request, response) => {
+
+    const blogs = await User.find({})
+    response.json(blogs)
+})
+
 usersRouter.post('/', async (request, response, next) => {
 
     const { body } = request;
