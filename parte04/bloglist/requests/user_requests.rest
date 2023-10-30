@@ -1,0 +1,14 @@
+GET http://localhost:3003/api/users
+
+###
+POST http://localhost:3003/api/users
+content-type: application/json
+
+{
+    "name":"nameRequest",
+    "username": "usernameRequest",
+    "password": "secreto"
+}
+
+###
+DELETE http://localhost:3003/api/users/6540262cdff794894d0d5410
