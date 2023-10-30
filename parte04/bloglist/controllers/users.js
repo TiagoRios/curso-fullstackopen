@@ -1,5 +1,8 @@
 import { Router } from 'express';
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import bcrypt from 'bcrypt'
+
 import User from "../models/user.js";
 
 const usersRouter = Router();
@@ -12,9 +15,16 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response, next) => {
 
-    const { body } = request;
+    const { username, name, password } = request.body
 
-    const user = new User(body);
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
+
+    const user = new User({
+        username,
+        name,
+        password : passwordHash,
+    })
 
     try {
         const savedUser = await user.save()
