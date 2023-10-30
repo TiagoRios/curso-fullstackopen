@@ -11,7 +11,7 @@
 <ol>
     <li>clone this project.</li>
     <li>Create an account on MongoDB Atlas.</li>
-    <li>configure a database.</li>
+    <li>configure a database on MongoDB Atlas.</li>
     <li>Copy the MongoDB Atlas connection url.</li>
 </ol>
 

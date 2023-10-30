@@ -4,8 +4,9 @@ import mongoose from 'mongoose';
 
 import config from './utils/config.js';
 import logger from './utils/logger.js'
-import blogsRouter from './controllers/blogs.js';
 import middleware from './utils/middleware.js';
+
+import blogsRouter from './controllers/blogs.js';
 
 const app = express();
 

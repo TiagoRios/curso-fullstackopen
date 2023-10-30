@@ -236,28 +236,28 @@ describe('deleting a blog', () => {
     })
 })
 
-describe.only('updating a blog', () => {
+describe('updating a blog', () => {
 
     test('by valid id, increase by 100 likes', async () => {
 
         let response = await api.get(URL_BASE);
 
-        const FIRST_BLOG = response.body[0];
+        const firstBlog = response.body[0];
 
-        const UPDATED_BLOG = { ...FIRST_BLOG, likes: FIRST_BLOG.likes + 100 }
+        const updatedBlog = { ...firstBlog, likes: firstBlog.likes + 100 }
 
         await api
-            .put(URL_BASE.concat(`/${FIRST_BLOG.id}`))
-            .send(UPDATED_BLOG)
+            .put(URL_BASE.concat(`/${firstBlog.id}`))
+            .send(updatedBlog)
 
-        response = await api.get(URL_BASE.concat(`/${FIRST_BLOG.id}`))
+        response = await api.get(URL_BASE.concat(`/${firstBlog.id}`))
 
-        expect(response.body.likes).toBe(UPDATED_BLOG.likes)
+        expect(response.body.likes).toBe(updatedBlog.likes)
     })
 
     test('by valid id but not existing, return status 404 - Not Found', async () => {
 
-        const UPDATED_BLOG = {
+        const updatedBlog = {
             id: VALID_ID_FORMAT,
             author: BLOG_AUTHOR_NAME,
             title: BLOG_TITLE,
@@ -265,13 +265,12 @@ describe.only('updating a blog', () => {
             likes: 100,
         }
 
-        const RESPONSE = await api
-            .put(URL_BASE.concat(`/${UPDATED_BLOG.id}`))
-            .send(UPDATED_BLOG)
+        const response = await api
+            .put(URL_BASE.concat(`/${updatedBlog.id}`))
+            .send(updatedBlog)
 
-
-        expect(RESPONSE.status).toBe(404)
-        expect(RESPONSE.text).toBe("Not Found")
+        expect(response.status).toBe(404)
+        expect(response.text).toBe("Not Found")
     })
 })
 
