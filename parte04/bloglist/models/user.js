@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable import/no-extraneous-dependencies */
 import mongoose from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -8,12 +10,16 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
+        minlength: [3, "must be at least 3 characters"],
+        unique: true
     },
     password: {
         type: String,
-        required: true,
+        required: true
     },
 })
+
+userSchema.plugin(uniqueValidator)
 
 userSchema.set('toJSON', {
     transform: (document, returnedObject) => {

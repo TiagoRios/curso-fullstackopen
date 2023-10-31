@@ -17,13 +17,32 @@ usersRouter.post('/', async (request, response, next) => {
 
     const { username, name, password } = request.body
 
+    if (password === "") { // custom validation
+        response.status(400).json({ error: "User validation failed: password: Path `password` is required." })
+
+    } else if (password.length < 3) {
+        response.status(400).json({ error: "User validation failed: password: must be at least 3 characters" })
+    }
+
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
+
+    // other way - uses Mongoose validation (required)
+    // let passwordHash = password;
+
+    // if (password.length > 0 && password.length < 3) {
+    //     response.status(400).json({ error: "User validation failed: password: must be at least 3 characters" })
+
+    // } else if (password.length !== 0 || password !== "") { // does not encrypt empty string
+    //     const saltRounds = 10
+    //     passwordHash = await bcrypt.hash(password, saltRounds)
+    // }
+    // end other way
 
     const user = new User({
         username,
         name,
-        password : passwordHash,
+        password: passwordHash
     })
 
     try {
