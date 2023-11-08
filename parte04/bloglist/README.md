@@ -19,8 +19,12 @@
 
 create a ".env" file in the project root and add the environment variable with the connection url:
 
-```MONGODB_URI=mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority```
+```.env
+MONGODB_URI=mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority
+```
 
 ### Without defining the ".env" file, using CLI:
 
-```node app.js MONGODB_URI=´mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority´```
+```bash
+node app.js MONGODB_URI=´mongodb+srv://tiago:<password>@cluster0.xssg27f.mongodb.net/<your-DB-Name>?retryWrites=true&w=majority´
+```

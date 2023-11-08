@@ -1,15 +1,33 @@
+/**
+ * Conta a quantidade de blogs.
+ *
+ * @param {*} blogs
+ * @returns {number} a quantidade de blogs.
+ */
 const dummy = (blogs) => {
     if (blogs.length === 0) return 1;
 
     return blogs.length;
 }
 
+/**
+ * Soma a quantidade de likes e retorna o resultado da soma.
+ *
+ * @param {Blogs[]} blogs
+ * @returns {number} quantidade total de likes.
+ */
 function totalLikes(blogs) {
     return blogs.reduce((acc, current) =>
         acc + current.likes
         , 0)
 }
 
+/**
+ * Busca o blogs favorito. Em caso de empate retorna todos eles.
+ *
+ * @param {Blog[]} blogs
+ * @returns {Blog[]} um ou mais blogs favoritos.
+ */
 function favoriteBlog(blogs) {
     const arraySorted = blogs
         .slice()
@@ -24,6 +42,12 @@ function favoriteBlog(blogs) {
 
 }
 
+/**
+ * Busca o author com mais blogs.
+ *
+ * @param {Blog[]} blogs
+ * @returns {Blog} o primeiro author com mais blogs.
+ */
 function mostBlogs(blogs) {
 
     let totalAuthorsBlogs = [];
@@ -46,6 +70,12 @@ function mostBlogs(blogs) {
     return totalAuthorsBlogs[0];
 }
 
+/**
+ * Busca o author com mais likes.
+ *
+ * @param {Blog[]} blogs
+ * @returns {Blog} o primeiro author com mais likes.
+ */
 function mostLikes(blogs) {
 
     let totalAuthorsLikes = [];
