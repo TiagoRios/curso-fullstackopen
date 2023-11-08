@@ -1,19 +1,25 @@
 import { Router } from 'express';
 
 import Blog from "../models/blog.js";
+import User from "../models/user.js";
 
 const blogsRouter = Router();
 
+const userObject = {
+    name: 1,
+    username: 1,
+}
+
 blogsRouter.get('/', async (request, response) => {
 
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', userObject)
     response.json(blogs)
 })
 
 blogsRouter.get('/:id', async (request, response, next) => {
 
     try {
-        const blog = await Blog.findById(request.params.id)
+        const blog = await Blog.findById(request.params.id).populate('user', userObject)
         response.json(blog);
 
     } catch (error) {
@@ -29,10 +35,22 @@ blogsRouter.post('/', async (request, response, next) => {
         body = { ...body, likes: 0 }
     }
 
-    const blog = new Blog(body)
-
     try {
+        const user = await User.findById(body.userId)
+
+        const blog = new Blog({
+            title: body.title,
+            author: body.author,
+            url: body.url,
+            likes: body.likes,
+            user: user.id
+        })
+
         const savedBlog = await blog.save()
+
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
+
         response.status(201).json(savedBlog)
 
     } catch (error) {

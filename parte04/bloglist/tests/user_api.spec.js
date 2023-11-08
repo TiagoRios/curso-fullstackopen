@@ -117,6 +117,6 @@ describe('when adding new user', () => {
             .expect('Content-Type', APLICATION_JSON)
 
         expect(response.status).toBe(400)
-        expect(response.body.error).toBe("User validation failed: username: Error, expected `username` to be unique. Value: `UniqueUsername`")
+        expect(response.body.error).toBe(`User validation failed: username: Error, expected \`username\` to be unique. Value: \`${NEW_USER.username}\``)
     })
 })

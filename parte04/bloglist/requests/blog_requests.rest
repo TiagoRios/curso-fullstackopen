@@ -2,12 +2,16 @@
 GET http://localhost:3003/api/blogs
 
 ###
+GET http://localhost:3003/api/blogs/654c1404d4b40776b4d654b2
+
+###
 POST http://localhost:3003/api/blogs
 content-type: application/json
 
 {
     "title":"titulo do blog",
     "author": "dfdf",
-    "url": "minhaUrl",
-    "likes": 100
+    "url": "minhaUrl10",
+    "likes": 100,
+    "userId":"654bf7f2978b9f620b46a07c"
 }

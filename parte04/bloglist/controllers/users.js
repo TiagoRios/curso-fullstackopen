@@ -7,10 +7,28 @@ import User from "../models/user.js";
 
 const usersRouter = Router();
 
+const blog = {
+    author: 1,
+    title: 1,
+    url: 1,
+    likes: 1,
+}
+
 usersRouter.get('/', async (request, response) => {
 
-    const blogs = await User.find({})
+    const blogs = await User.find({}).populate('blogs', blog)
     response.json(blogs)
+})
+
+usersRouter.get('/:id', async (request, response, next) => {
+
+    try {
+        const user = await User.findById(request.params.id).populate('blogs', blog)
+        response.json(user);
+
+    } catch (error) {
+        next(error)
+    }
 })
 
 usersRouter.post('/', async (request, response, next) => {
