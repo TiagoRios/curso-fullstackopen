@@ -11,7 +11,7 @@ const requestLogger = (request, response, next) => {
     logger.info('Method:', request.method)
     logger.info('Path:  ', request.path)
     logger.info('Body:  ', request.body)
-    logger.info('headers:  ', request.headers)
+    // logger.info('headers:  ', request.headers)
     logger.info('---')
     next()
 }
@@ -58,8 +58,19 @@ const errorHandler = (error, request, response, next) => {
     return next(error)
 }
 
+const tokenExtractor = (request, response, next) => {
+    const authorization = request.get('authorization')
+
+    if (authorization && authorization.startsWith('Bearer ')) {
+        request.token = authorization.replace('Bearer ', '')
+    }
+
+    next()
+}
+
 export default {
     requestLogger,
     unknownEndpoint,
     errorHandler,
+    tokenExtractor,
 };

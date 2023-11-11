@@ -12,20 +12,6 @@ const userObject = {
     username: 1,
 }
 
-/**
- * A função auxiliar isola o token do header authorization.
- */
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-
-    return null
-}
-
-
 blogsRouter.get('/', async (request, response) => {
 
     const blogs = await Blog.find({}).populate('user', userObject)
@@ -50,7 +36,7 @@ blogsRouter.post('/', async (request, response, next) => {
 
     // verifica a validade do token.
     // decodifica o token, ou retorna o objeto no qual o token foi baseado.
-    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
     // Token id indefinido? então error.
     if (!decodedToken.id) {
