@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import jwt from 'jsonwebtoken';
+
 import Blog from "../models/blog.js";
 import User from "../models/user.js";
 
@@ -9,6 +11,20 @@ const userObject = {
     name: 1,
     username: 1,
 }
+
+/**
+ * A função auxiliar isola o token do header authorization.
+ */
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '')
+    }
+
+    return null
+}
+
 
 blogsRouter.get('/', async (request, response) => {
 
@@ -27,16 +43,27 @@ blogsRouter.get('/:id', async (request, response, next) => {
     }
 })
 
+// eslint-disable-next-line consistent-return
 blogsRouter.post('/', async (request, response, next) => {
 
     let { body } = request;
+
+    // verifica a validade do token.
+    // decodifica o token, ou retorna o objeto no qual o token foi baseado.
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+
+    // Token id indefinido? então error.
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
 
     if (!body.likes) {
         body = { ...body, likes: 0 }
     }
 
     try {
-        const user = await User.findById(body.userId)
+        const user = await User.findById(decodedToken.id) // agora busco depois de decodificado.
+        // const user = await User.findById(body.userId)
 
         const blog = new Blog({
             title: body.title,

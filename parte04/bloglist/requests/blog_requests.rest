@@ -7,11 +7,11 @@ GET http://localhost:3003/api/blogs/654c1404d4b40776b4d654b2
 ###
 POST http://localhost:3003/api/blogs
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZ3VlbSIsImlkIjoiNjU0ZWM3NWRlMDUxMTYwYjZlNDVkYTYyIiwiaWF0IjoxNjk5NjY0Nzg5fQ.wWVGTVUrlPRx9Vzf-DGyJkuyWdbYBO1VMEalVg-IeR8
 
 {
-    "title":"titulo do blog",
-    "author": "dfdf",
-    "url": "minhaUrl10",
-    "likes": 100,
-    "userId":"654bf7f2978b9f620b46a07c"
+    "title":"teste Authorization",
+    "author": "testando",
+    "url": "test.authorization.com",
+    "likes": 99
 }
