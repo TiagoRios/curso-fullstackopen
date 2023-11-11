@@ -71,22 +71,29 @@ blogsRouter.post('/', async (request, response, next) => {
     }
 })
 
+// eslint-disable-next-line consistent-return
 blogsRouter.delete('/:id', async (request, response, next) => {
 
-    try {
-        const blog = await Blog.findById(request.params.id)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
-        if (blog) {
+    const user = await User.findById(decodedToken.id)
+    const blog = await Blog.findById(request.params.id)
+
+    if (blog === null) {
+        response.status(404).send({ error: `Blog not found` })
+
+    } else if (blog.user._id.toString() === user._id.toString()) {
+
+        try {
             await Blog.findByIdAndRemove(request.params.id)
-
             response.status(204).end()
 
-        } else {
-            response.status(404).end()
+        } catch (exception) {
+            next(exception)
         }
 
-    } catch (exception) {
-        next(exception)
+    } else {
+        response.status(401).json({ error: `Unauthorized` })
     }
 })
 
